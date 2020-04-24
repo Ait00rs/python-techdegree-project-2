@@ -1,10 +1,11 @@
 import constants
+import copy
 import random
 
 
-# copying lists created data from constants.py would not be modify or mutate.
-teams = constants.TEAMS
-players = constants.PLAYERS
+# copying data from constants.py so that original data would not be modified.
+my_teams = copy.deepcopy(constants.TEAMS)
+my_players = copy.deepcopy(constants.PLAYERS)
 
 
 """
@@ -16,7 +17,7 @@ False if NO. Height converted to an integer.
 
 
 def clear_data():
-    for data in players:
+    for data in my_players:
         data['height'] = int(data['height'][:2])
         data['guardians'] = data['guardians'].split(' and ')
         if data['experience'] == 'NO':
@@ -24,7 +25,7 @@ def clear_data():
         else:
             data['experience'] = True
 
-    return players
+    return my_players
 
 
 """
@@ -41,8 +42,8 @@ team_ban = []
 
 
 def player_balance(team):
-    while len(players) != 0 and len(team) < 6:
-        team.append((players.pop(random.randrange(len(players)))))
+    while len(my_players) != 0 and len(team) < 6:
+        team.append((my_players.pop(random.randrange(len(my_players)))))
     return team
 
 
@@ -53,7 +54,7 @@ teams_list() function displays teams in a list.
 
 
 def teams_list():
-    for index, item in enumerate(teams, 1):
+    for index, item in enumerate(my_teams, 1):
         print(f'     {index}. {item}')
 
 
@@ -72,11 +73,35 @@ def players_list(selected_team):
     return ", ".join(selected_player_list)
 
 
+"""
+Display the stats:
+team_stats() displaying selected team stats
+"""
+
+
+def team_stats(team_position_in_list, balanced_team):
+    print(f'\n Team: {my_teams[team_position_in_list]} Stats:')
+    print(' ---------------------')
+    print(f' Total players: {len(balanced_team)}')
+    print('\n Player on Team:')
+    print(f' {players_list(balanced_team)}')
+
+# tool_name() function prints out tool name
+
+
+def tool_name():
+    print("""
+--------------------------
+BASKETBALL TEAM STATS TOOL
+--------------------------
+     === MENU ===
+""")
+
+
 # menu() function displays menu
 
 
 def menu():
-    print('     === MENU ===    ')
     print(' Here are your options:')
     print('     1. Show Teams')
     print('     2. Quit')
@@ -84,13 +109,10 @@ def menu():
 
 # Basketbal Team Stats tool starts here
 if __name__ == '__main__':
-    print("""
---------------------------
-BASKETBALL TEAM STATS TOOL
---------------------------
-""")
+    # tool_name() function prints out tool name
+    tool_name()
 
-# calling menu() function to load menu to the user
+    # calling menu() function to load menu to the user
 menu()
 
 # calling below functions to clean data and assig players to each team
@@ -103,7 +125,8 @@ player_balance(team_ban)
 while True:
     try:
         # prompting user to select an option from menu
-        user_selection = int(input("\n Please select between option 1 or 2: "))
+        user_selection = int(
+            input("\n Please select between option 1 or 2 and press ENTER to continue: "))
     except ValueError:
         print(" Oh no! That's not a valid value. Try again...")
     else:
@@ -119,7 +142,7 @@ while True:
                 try:
                     # prompting the user to pick a team and handling errors if any
                     user_team_selection = int(
-                        input("\n Please select a team and enter team number: "))
+                        input("\n Please select a team and enter team number and press ENTER to continue: "))
                 except ValueError:
                     print(" Oh no! Please choose between 1, 2 or 3. Try again...")
                     continue
@@ -127,30 +150,21 @@ while True:
                     if user_team_selection > 3 or user_team_selection < 1:
                         print(" Oh no! Please choose between 1, 2 or 3. Try again...")
                         continue
-                    # below code-blocks loading of team stats based on users selection
+                    # displaying selected team stats
                     elif user_team_selection == 1:
-                        print(f'\n Team: {teams[0]} Stats:')
-                        print(' ---------------------')
-                        print(f' Total players: {len(team_pan)}')
-                        print('\n Player on Team:')
-                        print(f' {players_list(team_pan)}')
+                        team_position_in_list = 0
+                        balanced_team = team_pan
+                        team_stats(team_position_in_list, balanced_team)
                     elif user_team_selection == 2:
-                        print(f'\n Team: {teams[1]} Stats:')
-                        print(' ---------------------')
-                        print(f' Total players: {len(team_war)}')
-                        print('\n Player on Team:')
-                        print(f' {players_list(team_war)}')
+                        team_position_in_list = 1
+                        balanced_team = team_war
+                        team_stats(team_position_in_list, balanced_team)
                     elif user_team_selection == 3:
-                        print(f'\n Team: {teams[2]} Stats:')
-                        print(' ---------------------')
-                        print(f' Total players: {len(team_ban)}')
-                        print('\n Player on Team:')
-                        print(f' {players_list(team_ban)}')
+                        team_position_in_list = 2
+                        balanced_team = team_ban
+                        team_stats(team_position_in_list, balanced_team)
                     break
-    # after team stats are printed, prompting user to continue/quit
-    next_team = input("\n Would you like to continue? [y]es/[n]o: ")
-    if next_team.lower() == "y":
-        menu()
-    else:
-        print('\n Quiting....')
-        break
+    # after team stats are displayed, prompting user to continue
+    input('\n Press ENTER to continue...')
+    print('')
+    menu()
